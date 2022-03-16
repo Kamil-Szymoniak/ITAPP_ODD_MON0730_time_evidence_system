@@ -1,0 +1,53 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+HELP.md
+timeevidence-backend/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/timeevidence-backend/src/main/**/target/
+!**/timeevidence-backend/src/test/**/target/
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+.idea
+*.iws
+*.iml
+*.ipr
+
+/timeevidence-backend/nbproject/private/
+/timeevidence-backend/nbbuild/
+/timeevidence-backend/dist/
+/timeevidence-backend/nbdist/
+/timeevidence-backend/.nb-gradle/
+build/
+!**/timeevidence-backend/src/main/**/build/
+!**/timeevidence-backend/src/test/**/build/
+
+.vscode/
+
+# dependencies
+timeevidence-frontend/node_modules
+timeevidence-frontend/.pnp
+.pnp.js
+
+# testing
+timeevidence-frontend/coverage
+
+# production
+timeevidence-frontend/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
