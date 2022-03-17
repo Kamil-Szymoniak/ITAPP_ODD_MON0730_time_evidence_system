@@ -3,7 +3,7 @@ package pl.edu.pwr.timeevidence.entity
 import javax.persistence.*
 
 @Entity
-@Table(name = "user", schema = "public")
+@Table(name = "user", schema = "adm")
 class UserEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_generator")
