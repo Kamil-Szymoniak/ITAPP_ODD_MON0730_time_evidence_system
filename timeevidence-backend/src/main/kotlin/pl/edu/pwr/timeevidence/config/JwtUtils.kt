@@ -11,7 +11,7 @@ import javax.xml.bind.DatatypeConverter
 
 @Component
 class JwtUtils (
-    //TODO private val cookieService: CookieService,
+    private val cookieService: CookieService,
 ) {
     private val jwtSecret: String = "secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret"
     private val jwtExpirationTime: Int = 1200000 //20 min
@@ -19,7 +19,7 @@ class JwtUtils (
 
     fun generateToken(auth: Authentication) = Jwts.builder()
         .setIssuer("Kamil Szymoniak")
-        .setSubject((auth.principal as /*TODO UserPrincipal*/).getId().toString())
+        .setSubject((auth.principal as UserPrincipal).getId().toString())
         .setIssuedAt(Date())
         .setExpiration(Date(Date().time + jwtExpirationTime))
         .setId(UUID.randomUUID().toString())
