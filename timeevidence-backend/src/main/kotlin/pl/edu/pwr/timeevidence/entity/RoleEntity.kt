@@ -21,11 +21,14 @@ class RoleEntity (
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "many_role_has_many_permission",
+        schema = "adm",
         joinColumns = [JoinColumn(name = "id_role", referencedColumnName = "id", nullable = false)],
         inverseJoinColumns = [JoinColumn(name = "id_permission", referencedColumnName = "id", nullable = false)]
     )
-    var permissions: Set<PermissionEntity> = emptySet()
+    var permissions: List<PermissionEntity> = emptyList()
 ) {
+    constructor() : this(null, "")
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
