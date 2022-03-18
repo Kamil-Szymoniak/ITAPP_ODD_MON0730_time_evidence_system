@@ -1,4 +1,3 @@
-INSERT INTO adm.permission (id, name) VALUES (0, 'default');
 INSERT INTO adm.permission (id, name) VALUES (1, 'NAME1');
 INSERT INTO adm.permission (id, name) VALUES (2, 'NAME2');
 INSERT INTO adm.permission (id, name) VALUES (3, 'NAME3');

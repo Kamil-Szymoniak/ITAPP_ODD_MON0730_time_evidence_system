@@ -25,11 +25,14 @@ class UserEntity (
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "many_user_has_many_role",
+        schema = "adm",
         joinColumns = [JoinColumn(name = "id_user", referencedColumnName = "id", nullable = false)],
         inverseJoinColumns = [JoinColumn(name = "id_role", referencedColumnName = "id", nullable = false)]
     )
-    var roles: Set<RoleEntity> = emptySet()
+    var roles: List<RoleEntity> = emptyList()
 ) {
+    constructor() : this(null, "", "", "")
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
