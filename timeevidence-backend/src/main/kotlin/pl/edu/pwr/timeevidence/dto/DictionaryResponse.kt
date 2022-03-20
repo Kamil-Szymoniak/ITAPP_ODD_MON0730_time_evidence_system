@@ -1,6 +1,7 @@
 package pl.edu.pwr.timeevidence.dto
 
 import pl.edu.pwr.timeevidence.entity.PermissionEntity
+import pl.edu.pwr.timeevidence.entity.PersonEntity
 import pl.edu.pwr.timeevidence.entity.RoleEntity
 import pl.edu.pwr.timeevidence.entity.UserEntity
 
@@ -22,6 +23,11 @@ class DictionaryResponse (
             id = entity.id!!,
             name = entity.username,
             description = entity.email
+        )
+        fun fromPerson(entity: PersonEntity) = DictionaryResponse(
+            id = entity.id!!,
+            name = "${entity.name} ${entity.surname}",
+            description = "${entity.phone}"
         )
     }
 }
