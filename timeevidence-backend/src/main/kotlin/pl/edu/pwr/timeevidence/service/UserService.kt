@@ -84,7 +84,7 @@ class UserService (
         UserResponse.fromEntity(userRepository.findById(id).orElseThrow { NotFoundException("User", "id", id) })
 
     fun getMe(auth: Authentication) =
-        MeResponse.fromEntity(userRepository.findUserByUsernameIgnoreCase((auth.principal as UserPrincipal).username)
+        UserResponse.fromEntity(userRepository.findUserByUsernameIgnoreCase((auth.principal as UserPrincipal).username)
             .orElseThrow { NotFoundException("Me", "username", (auth.principal as UserPrincipal).username) })
 
 //   fun getUsers(criteria: EntityCriteria<UserEntity>) =
