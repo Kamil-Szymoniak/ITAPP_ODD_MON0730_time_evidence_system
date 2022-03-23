@@ -20,8 +20,9 @@ class UserEntity (
     var email: String,
     @Column(name = "password", nullable = false)
     var password: String,
-    //@Column(name = "id_person", nullable = false)
-    //var person: PersonEntity,
+    @OneToOne
+    @JoinColumn(name = "id_person", referencedColumnName = "id")
+    var person: PersonEntity? = null,
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "many_user_has_many_role",
@@ -43,7 +44,7 @@ class UserEntity (
         if (username != other.username) return false
         if (email != other.email) return false
         if (password != other.password) return false
-        //if (person != other.person) return false
+        if (person != other.person) return false
         if (roles != other.roles) return false
 
         return true
@@ -54,8 +55,10 @@ class UserEntity (
         result = 31 * result + username.hashCode()
         result = 31 * result + email.hashCode()
         result = 31 * result + password.hashCode()
-        //result = 31 * result + person.hashCode()
+        result = 31 * result + (person?.hashCode() ?: 0)
         result = 31 * result + roles.hashCode()
         return result
     }
+
+
 }

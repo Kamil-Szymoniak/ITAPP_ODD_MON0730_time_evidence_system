@@ -12,7 +12,8 @@ data class UserRequest (
     val email: String,
     @field:NotBlank
     val password: String,
-    val roles: List<Short>
+    val roles: List<Short>,
+    val person: Int? = null
 )
 
 data class LoginRequest (
@@ -33,26 +34,30 @@ data class UserResponse (
     val id: Int,
     val username: String,
     val email: String,
-    val roles: List<DictionaryResponse>
+    val person: DictionaryResponse?,
+    val roles: List<RoleResponse>
 ) {
     companion object {
         fun fromEntity(entity: UserEntity) = UserResponse(
             id = entity.id!!,
             username = entity.username,
             email = entity.email,
-            roles = entity.roles.map { DictionaryResponse.fromRole(it) }
+            person = entity.person?.let { DictionaryResponse.fromPerson(it) },
+            roles = entity.roles.map { RoleResponse.fromEntity(it) }
         )
     }
 }
 
 data class MeResponse (
     val username: String,
-    val email: String
+    val email: String,
+    val person: PersonResponse?
 ) {
     companion object {
         fun fromEntity(entity: UserEntity) = MeResponse(
             username = entity.username,
-            email = entity.email
+            email = entity.email,
+            person = entity.person?.let { PersonResponse.fromEntity(it) }
         )
     }
 }
