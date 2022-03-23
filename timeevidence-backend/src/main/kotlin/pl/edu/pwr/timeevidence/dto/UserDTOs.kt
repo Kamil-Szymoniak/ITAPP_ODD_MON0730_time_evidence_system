@@ -35,7 +35,7 @@ data class UserResponse (
     val username: String,
     val email: String,
     val person: DictionaryResponse?,
-    val roles: List<DictionaryResponse>
+    val roles: List<RoleResponse>
 ) {
     companion object {
         fun fromEntity(entity: UserEntity) = UserResponse(
@@ -43,7 +43,7 @@ data class UserResponse (
             username = entity.username,
             email = entity.email,
             person = entity.person?.let { DictionaryResponse.fromPerson(it) },
-            roles = entity.roles.map { DictionaryResponse.fromRole(it) }
+            roles = entity.roles.map { RoleResponse.fromEntity(it) }
         )
     }
 }

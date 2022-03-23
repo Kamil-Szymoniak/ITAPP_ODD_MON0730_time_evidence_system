@@ -19,7 +19,8 @@ import javax.validation.Valid
 @RequestMapping("/auth")
 class AuthController(private val userService: UserService) {
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('CAN_EDIT_USERS')")
+    @PreAuthorize("permitAll()")
+    //@PreAuthorize("hasAuthority('CAN_EDIT_USERS')")
     fun register(@RequestBody request: @Valid UserRequest): ResponseEntity<BasicResponse> =
         ResponseEntity.created(UriBuilder.getUri("/users/{id}", userService.handleRegister(request)))
             .body(BasicResponse("User added successfully", true))
