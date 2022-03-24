@@ -4,6 +4,11 @@ export interface BasicResponse {
     dto: Object | null;
 }
 
+export interface PageResponse<T> {
+    items: T[];
+    totalElements: number;
+}
+
 export interface DictionaryResponse {
     id: number;
     name: string;
