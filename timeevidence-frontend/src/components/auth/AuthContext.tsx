@@ -1,7 +1,7 @@
 import React, {ComponentType, useContext} from 'react';
 import {UserResponse} from "../../dto/dto";
 import {RouteComponentProps, withRouter} from "react-router";
-import {getLoggedUserData} from "../../endpoints/auth";
+import {getLoggedUserData} from "../../endpoints/user";
 import {LOGIN, TIME_EVIDENCE} from "../../routeNames";
 import {loginUser as loginRequest, logout as logoutRequest} from "../../endpoints/auth";
 import ConfirmationDialog from "../shared/ConfirmationDialog";
@@ -123,7 +123,7 @@ class AuthProvider extends React.Component<Props, State> {
         .then(this.setUserDataFromResponse)
         .then(this.hideSplashScreen)
         .then(this.redirectToMainPage)
-        .then(() => toast.success("User logged in successfully"))
+        .then(() => toast.success("user logged in successfully"))
         .catch(async e => {
             const error = await getExceptionMessage(e)
             toast.error(error)

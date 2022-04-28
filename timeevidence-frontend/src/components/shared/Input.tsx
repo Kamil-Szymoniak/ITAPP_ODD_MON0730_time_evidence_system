@@ -16,6 +16,8 @@ type Props = {
     autoFocus?: boolean;
     multiline?: boolean;
     disabled?: boolean;
+    minRows?: number;
+    inputProps?: any
 }
 
 export function Input(props: Props) {
@@ -38,6 +40,8 @@ export function Input(props: Props) {
             fullWidth={props.fullWidth}
             autoFocus={props.autoFocus}
             multiline={props.multiline}
+            minRows={props.minRows}
+            inputProps={props.inputProps}
         />
     );
 }

@@ -4,7 +4,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 
 export const ForbiddenScreen = () => (
-    <Grid container xs={12}>
+    <Grid container>
         <Grid item xs={3}/>
         <Grid item xs={6}>
             <Grid style={{marginTop: 50, textAlign: 'center'}}>

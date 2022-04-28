@@ -20,6 +20,7 @@ type MenuPrototype<T> = {
     content: React.ReactNode;
     icon?: React.ReactNode;
     danger?: boolean;
+    disable?: (data: T, index: number) => boolean
 }
 
 export type Menu<T> = MenuPrototype<T> | ((row: T) => MenuPrototype<T> | null)
@@ -43,37 +44,10 @@ function AppTableBody<T>(props: Props<T>) {
 
     return (
         <TableBody>
-            {props.isLoading && Array.from({length: props.pageSize}, (_, index) => (
-                <TableRow key={index} className={styles.tableRow}>
-                    {props.actions != null && (
-                        <TableCell> actions</TableCell>
-                    )}
-                    {props.columns.map((column) => (
-                        <TableCell key={column.field} style={{width: column.width}}>
-                            <Skeleton width="auto"/>
-                        </TableCell>
-                    ))}
-                </TableRow>
-            ))}
-            {props.error && (
-                <TableRow className={styles.tableRow}>
-                    <TableCell colSpan={props.columns.length}>
-                        <Typography>
-                            {'Error occured: ' + props.error.message}
-                        </Typography>
-                        <Button
-                            variant={"outlined"}
-                            onClick={props.reload}
-                        >Error, reload
-                        </Button>
-                    </TableCell>
-                </TableRow>
-            )}
             {props.error == null && !props.isLoading && props.data?.items.map((row, index) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <TableRow key={index} className={styles.tableRow}>
                     {props.actions != null && (
-                        <TableCell className={styles.tableCell}>
+                        <TableCell key={`${index} actions`} className={styles.tableCell}>
                             {props.actions
                                 .map((menu) => {
                                     if (typeof menu === 'function') {
@@ -83,13 +57,18 @@ function AppTableBody<T>(props: Props<T>) {
                                 })
                                 .filter((menu) => menu != null)
                                 .map((menu, menuIndex) => (
-                                    <MenuItem
-                                        key={menu!.key ?? menuIndex}
-                                        className={menu!.icon != null ? 'has-icon' : 'no-icon'}
-                                        onClick={() => menu!.onClick(row, index)}
-                                    >
-                                        {menu!.icon}
-                                    </MenuItem>
+                                    <>
+
+                                            <MenuItem
+                                                key={menu!.key ?? `${menuIndex} 1`}
+                                                className={menu!.icon != null ? 'has-icon' : 'no-icon'}
+                                                onClick={() => menu!.onClick(row, index)}
+                                                disabled={menu!.disable ? menu!.disable(row, index) : false}
+                                            >
+                                                {menu!.icon}
+                                            </MenuItem>
+
+                                    </>
                                 ))}
 
                         </TableCell>
@@ -98,7 +77,7 @@ function AppTableBody<T>(props: Props<T>) {
                         const value = resolve(row, column.field);
                         return (
                             <TableCell
-                                key={column.field}
+                                key={`${column.field} ${index}`}
                                 className={styles.tableCell}
                                 style={{width: column.width}}
                                 onClick={() => props.onClick?.(row, index)} //edit after click on some row
@@ -117,13 +96,40 @@ function AppTableBody<T>(props: Props<T>) {
                                             <CheckIcon fontSize="large" color="success"/>
                                             : <CloseIcon fontSize="large" color="error"/>
                                     )}
-                                {/*{column.type === 'array' && (value ? value.map() : 'false')}*/}
                             </TableCell>
                         );
                     })}
 
                 </TableRow>
             ))}
+            {props.isLoading && Array.from({length: props.pageSize}, (_, index) => (
+
+                <TableRow key={index} className={styles.tableRow}>
+                    {props.actions != null && (
+                        <TableCell key={'loading actions'}> actions</TableCell>
+                    )}
+                    {props.columns.map((column) => (
+                        <TableCell key={`${column.name} loading`} style={{width: column.width}}>
+                            <Skeleton width="auto"/>
+                        </TableCell>
+                    ))}
+
+                </TableRow>
+            ))}
+            {props.error && (
+                <TableRow key={'error'} className={styles.tableRow}>
+                    <TableCell key={'error cell'} colSpan={props.columns.length}>
+                        <Typography>
+                            {'Error occurred: ' + props.error.message}
+                        </Typography>
+                        <Button
+                            variant={"outlined"}
+                            onClick={props.reload}
+                        >Error, reload
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            )}
         </TableBody>
     )
 }

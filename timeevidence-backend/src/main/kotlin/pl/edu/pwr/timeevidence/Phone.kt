@@ -18,7 +18,10 @@ annotation class Phone(
 
 class PhoneValidator : ConstraintValidator<Phone, String> {
     override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-        //TODO
-        return true
+        return try {
+            "^[+]*[(]?[0-9]{1,4}[)]?[-\\s./0-9]*\$".toRegex().matches(value!!)
+        } catch (_: Exception) {
+            false
+        }
     }
 }

@@ -6,13 +6,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {FC, MouseEventHandler} from "react";
 import {makeStyles} from "@material-ui/core";
-import {AppBarProps as MuiAppBarProps} from "@mui/material/AppBar/AppBar";
 import {styled} from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import {AuthConsumer} from '../auth/AuthContext';
 import {Button} from "@mui/material";
 
-type Props = MuiAppBarProps & {
+type Props = {
     open: boolean;
     handleOpen: MouseEventHandler<HTMLButtonElement> | undefined;
 }
@@ -21,7 +20,7 @@ const HeaderBar: FC<Props> = (props) => {
     const classes = useStyles();
     return (
         <div>
-            <AppBar position="fixed" open={props.open} handleOpen={props.handleOpen}>
+            <AppBar position="fixed" open={props.open}>
                 <Toolbar className={classes.toolbar}>
                     <IconButton
                         color="inherit"
@@ -82,9 +81,7 @@ const useStyles = makeStyles({
     }
 });
 
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})<Props>(({theme, open}) => ({
+const AppBar = styled(MuiAppBar, {shouldForwardProp: (prop) => prop !== 'open',})<{open: boolean}>(({theme, open}) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,

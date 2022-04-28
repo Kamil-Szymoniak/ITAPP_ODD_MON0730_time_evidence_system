@@ -175,6 +175,60 @@ class RoleControllerIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions[2].name").value("NAME3"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions[2].description").isEmpty)
 
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("new name"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("new description"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions", Matchers.hasSize<Any>(3)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[1].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[2].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[2].name").value("NAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[2].description").isEmpty)
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_EDIT_ROLES"])
+    @Throws(java.lang.Exception::class)
+    fun editRole_lessPermissions_then200() {
+        val request = RoleRequest("new name", "new description", listOf(1))
+        mockMvc.perform(
+            MockMvcRequestBuilders.put("/roles/{id}", 1)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Role edited successfully"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.name").value("new name"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.description").value("new description"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.permissions[0].description").isEmpty)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("new name"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("new description"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].description").isEmpty)
+
     }
 
     @Test
@@ -236,80 +290,96 @@ class RoleControllerIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[1].description").isEmpty)
     }
 
-//    @Test
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_withoutAccount_then401() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/roles")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(401))
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1")
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_withoutPermissions_then403() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/roles")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(403))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_invalidCriteria_then400() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/roles?search=ide>0")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(400))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/roles?search=id>0&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].id").value(3))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].name").value("NAME3"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description").value("description"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").value("description"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].description").value("description"))
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_withNarrowerCriteria_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/roles?search=id>2&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
-//    }
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun getRoles_withoutAccount_then401() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(401))
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @Throws(java.lang.Exception::class)
+    fun getRoles_withoutPermissions_then403() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(403))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
+    @Throws(java.lang.Exception::class)
+    fun getRoles_invalidCriteria_then400() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles?search=ide>0")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
+    @Throws(java.lang.Exception::class)
+    fun getRoles_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles?search=id>0&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].name").value("NAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[0].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].permissions[1].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].permissions", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].permissions[0].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].permissions[0].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].permissions[0].description").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].permissions", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].permissions[0].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].permissions[0].name").value("NAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].permissions[0].description").isEmpty)
+
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_ROLES"])
+    @Throws(java.lang.Exception::class)
+    fun getRoles_withNarrowerCriteria_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/roles?search=id>2&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
+    }
 
     @Test
     @Throws(java.lang.Exception::class)

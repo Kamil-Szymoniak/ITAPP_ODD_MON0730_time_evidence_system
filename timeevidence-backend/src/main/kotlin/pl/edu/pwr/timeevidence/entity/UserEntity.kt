@@ -60,5 +60,10 @@ class UserEntity (
         return result
     }
 
+    override fun toString(): String {
+        return "UserEntity(id=$id, username='$username', email='$email', password='$password', " +
+                "person=${person?.id}, roles=${roles.map { it.id }})"
+    }
+
 
 }

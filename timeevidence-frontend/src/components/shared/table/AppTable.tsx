@@ -39,18 +39,16 @@ type Props<T> = {
     query?: Record<string, string | number | undefined>;
     toolbar?: React.ReactNode;
     pdfUrl?: string;
+    constantQueries?: string;
 }
 
-export function createQuery(values: Record<string, string>): string | undefined {
+export function createQuery(values: Record<string, string>, constantQueries?: string): string | undefined {
     const query = Object.keys(values)
         .filter((key) => values[key] !== '' && values[key] != null)
-        .map((key) => `${key.replace("_", ".")}:${values[key]}`).join(',');
+        .map((key) => `${key.replace("_", ".")}:${values[key]}`).join(',')
+        + (constantQueries ?? '')
 
-    if (query !== '') {
-        return query;
-    }
-
-    return undefined;
+    return query !== '' ? query : undefined
 }
 
 const isBlank = (text: string | undefined | null) => text == null || text === ''
@@ -68,7 +66,7 @@ function DataTable<T>(props: Props<T>) {
                 pageSize: paging.pageSize,
                 sortBy: sorting.sortBy,
                 sortOrder: sorting.sortOrder,
-                search: createQuery(filtering.filters),
+                search: createQuery(filtering.filters, props.constantQueries),
                 ...props.query,
             },
             minDelay: 150,
@@ -86,12 +84,12 @@ function DataTable<T>(props: Props<T>) {
                    size="medium"
             >
                 <TableHead>
-                    <TableRow className={classes.tableHead}>
+                    <TableRow key={'sorting'} className={classes.tableHead}>
                         {props.actions && (
-                            <TableCell width="7">Actions</TableCell>
+                            <TableCell key={'actions sorting'} width="7">Actions</TableCell>
                         )}
                         {props.columns.map((column) => (
-                            <TableCell>
+                            <TableCell key={`${column.name} sorting`}>
                                 <TableSortLabel
                                     key={column.field}
                                     direction={sorting.sortOrder}
@@ -106,14 +104,14 @@ function DataTable<T>(props: Props<T>) {
 
                     </TableRow>
                     {filtering.filtersEnabled && (
-                        <TableRow className={classes.tableHead}>
+                        <TableRow key={'filtering'} className={classes.tableHead}>
                             {props.actions && (
-                                <TableCell style={{marginLeft: 7}}/>
+                                <TableCell key={'actions filtering'} style={{marginLeft: 7}}/>
                             )}
                             {props.columns.map((column) => (
                                 <TableCell
+                                    key={`${column.field} name`}
                                     className={classes.filterCellStyles}
-                                    key={column.field}
                                 >
                                     {(column.filter && (column.type === undefined || column.type === 'text')) && (
                                         <TextField
@@ -176,14 +174,16 @@ function DataTable<T>(props: Props<T>) {
                     onClick={props.onClick}
                 />
                 <TableFooter>
-                    <TablePagination
-                        count={request.data?.totalElements ?? 0}
-                        page={paging.pageNumber}
-                        onPageChange={paging.handleChangePage}
-                        rowsPerPageOptions={[5, 10, 20, {value: -1, label: 'All'}]}
-                        rowsPerPage={paging.pageSize}
-                        onRowsPerPageChange={paging.handleChangeRowsPerPage}
-                    />
+                    <tr>
+                        <TablePagination
+                            count={request.data?.totalElements ?? 0}
+                            page={paging.pageNumber}
+                            onPageChange={paging.handleChangePage}
+                            rowsPerPageOptions={[5, 10, 20, {value: -1, label: 'All'}]}
+                            rowsPerPage={paging.pageSize}
+                            onRowsPerPageChange={paging.handleChangeRowsPerPage}
+                        />
+                    </tr>
                 </TableFooter>
             </Table>
 
@@ -191,13 +191,15 @@ function DataTable<T>(props: Props<T>) {
     );
 }
 
+export default DataTable;
+
 const useStyles = makeStyles({
     table: {
         borderColor: '#000000',
         border: "1px",
     },
     tableHead: {
-        backgroundColor: '#ff8413',
+        background: '#FF69B4',
     },
     filterCellStyles: {
         paddingBottom: "5px!important",

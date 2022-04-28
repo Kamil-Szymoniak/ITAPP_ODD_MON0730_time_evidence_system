@@ -69,14 +69,12 @@ export const getExceptionMessage = async (ex: unknown): Promise<string> => {
         if (!(ex instanceof Response)) {
             return 'Unrecognized error has occurred';
         }
-
         if (ex && ex.status === 0) {
             return 'Server connection error has occurred';
         }
 
         if (ex && ex.json) {
             const { message, fieldErrors } = await ex.json();
-
             if (fieldErrors) {
                 return 'The data entered is not correct';
             } if (message && `${message}`.toLowerCase() !== 'no message available') {

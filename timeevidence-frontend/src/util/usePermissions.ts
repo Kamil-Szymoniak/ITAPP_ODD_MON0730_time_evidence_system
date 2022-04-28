@@ -1,7 +1,6 @@
 import {AuthContextProps, useAuthContext} from "../components/auth/AuthContext";
 
 export const getUserPermissions = (auth: AuthContextProps) => {
-    console.log(auth);
     if (auth == null || auth.user == null) return []
         if (auth.user.username && auth.user.roles.length > 0) {
             const permissions = auth.user.roles.flatMap(r => r.permissions)

@@ -63,7 +63,7 @@ class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NumberFormatException::class, MethodArgumentTypeMismatchException::class)
     @ResponseBody
-    fun handleNumberFormatException(): BasicResponse {
+    fun handleNumberFormatException(e: RuntimeException): BasicResponse {
         return BasicResponse("Wrong type", false)
     }
 

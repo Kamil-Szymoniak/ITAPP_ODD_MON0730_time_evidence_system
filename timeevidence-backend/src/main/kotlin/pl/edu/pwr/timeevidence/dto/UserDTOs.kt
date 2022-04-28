@@ -10,7 +10,6 @@ data class UserRequest (
     @field:NotBlank
     @field:Email
     val email: String,
-    @field:NotBlank
     val password: String,
     val roles: List<Short>,
     val person: Int? = null
@@ -44,20 +43,6 @@ data class UserResponse (
             email = entity.email,
             person = entity.person?.let { DictionaryResponse.fromPerson(it) },
             roles = entity.roles.map { RoleResponse.fromEntity(it) }
-        )
-    }
-}
-
-data class MeResponse (
-    val username: String,
-    val email: String,
-    val person: PersonResponse?
-) {
-    companion object {
-        fun fromEntity(entity: UserEntity) = MeResponse(
-            username = entity.username,
-            email = entity.email,
-            person = entity.person?.let { PersonResponse.fromEntity(it) }
         )
     }
 }
