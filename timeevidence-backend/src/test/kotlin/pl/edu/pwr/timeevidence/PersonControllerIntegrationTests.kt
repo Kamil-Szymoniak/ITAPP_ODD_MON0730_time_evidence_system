@@ -1,5 +1,6 @@
 package pl.edu.pwr.timeevidence
 
+import WithMockCustomUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.pwr.timeevidence.dto.PersonRequest
-import java.util.*
+import java.time.LocalDate
 
 @SpringBootTest(classes = [TimeEvidenceApplication::class])
 @AutoConfigureMockMvc
@@ -34,7 +35,7 @@ class PersonControllerIntegrationTests {
     @Test
     @Throws(Exception::class)
     fun createPerson_withoutAccount_then401() {
-        val request = PersonRequest("name", "surname", "660317614", Date(9, 11, 12))
+        val request = PersonRequest("name", "surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.post("/persons")
                 .content(objectMapper.writeValueAsString(request))
@@ -46,7 +47,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1")
     @Throws(java.lang.Exception::class)
     fun createPerson_withoutPermissions_then403() {
-        val request = PersonRequest("name", "surname", "660317614", Date(9, 11, 12))
+        val request = PersonRequest("name", "surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.post("/persons")
                 .content(objectMapper.writeValueAsString(request))
@@ -62,7 +63,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1", authorities = ["CAN_EDIT_PERSONS"])
     @Throws(java.lang.Exception::class)
     fun createPerson_invalidRequest_then400() {
-        val request = PersonRequest("", "surname", "660317614", Date(9, 11, 12))
+        val request = PersonRequest("", "surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.post("/persons")
                 .content(objectMapper.writeValueAsString(request))
@@ -78,7 +79,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1", authorities = ["CAN_EDIT_PERSONS"])
     @Throws(java.lang.Exception::class)
     fun createPerson_then201() {
-        val request = PersonRequest("name", "surname", "660317614", Date(9, 11, 12))
+        val request = PersonRequest("name", "surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.post("/persons")
                 .content(objectMapper.writeValueAsString(request))
@@ -92,7 +93,7 @@ class PersonControllerIntegrationTests {
     @Test
     @Throws(java.lang.Exception::class)
     fun editPerson_withoutAccount_then401() {
-        val request = PersonRequest("new name", "new surname", "660317614", Date(10, 11, 12))
+        val request = PersonRequest("new name", "new surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.put("/persons/{id}", 1)
                 .content(objectMapper.writeValueAsString(request))
@@ -105,7 +106,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1")
     @Throws(java.lang.Exception::class)
     fun editPerson_withoutPermissions_then403() {
-        val request = PersonRequest("new name", "new surname", "660317614", Date(10, 11, 12))
+        val request = PersonRequest("new name", "new surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.put("/persons/{id}", 1)
                 .content(objectMapper.writeValueAsString(request))
@@ -121,7 +122,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1", authorities = ["CAN_EDIT_PERSONS"])
     @Throws(java.lang.Exception::class)
     fun editPerson_nonExistent_then404() {
-        val request = PersonRequest("new name", "new surname", "660317614", Date(10, 11, 12))
+        val request = PersonRequest("new name", "new surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.put("/persons/{id}", 69)
                 .content(objectMapper.writeValueAsString(request))
@@ -137,7 +138,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1", authorities = ["CAN_EDIT_PERSONS"])
     @Throws(java.lang.Exception::class)
     fun editPerson_invalidRequest_then400() {
-        val request = PersonRequest("", "new surname", "660317614", Date(10, 11, 12))
+        val request = PersonRequest("", "new surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.put("/persons/{id}", 1)
                 .content(objectMapper.writeValueAsString(request))
@@ -153,7 +154,7 @@ class PersonControllerIntegrationTests {
     @WithMockUser(username = "user1", authorities = ["CAN_EDIT_PERSONS"])
     @Throws(java.lang.Exception::class)
     fun editPerson_then200() {
-        val request = PersonRequest("new name", "new surname", "660317614", Date(10, 11, 12))
+        val request = PersonRequest("new name", "new surname", "660317614", LocalDate.of(2001, 12, 12))
         mockMvc.perform(
             MockMvcRequestBuilders.put("/persons/{id}", 1)
                 .content(objectMapper.writeValueAsString(request))
@@ -166,7 +167,7 @@ class PersonControllerIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$.dto.name").value("new name"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.dto.surname").value("new surname"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.dto.phone").value("660317614"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.birthday").value("1910-12-11T22:36:00.000+00:00"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto.birthday").value("2001-12-12"))
 
 
     }
@@ -222,75 +223,280 @@ class PersonControllerIntegrationTests {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("NAME1"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.surname").value("SURNAME1"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.phone").value("+48666420656"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.birthday").value("2001-09-30T22:00:00.000+00:00"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.birthday").value("2001-10-01"))
     }
 
-//    @Test
-//    @Throws(java.lang.Exception::class)
-//    fun getPersons_withoutAccount_then401() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/persons")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(401))
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1")
-//    @Throws(java.lang.Exception::class)
-//    fun getPersons_withoutPermissions_then403() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/persons")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(403))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getPersons_invalidCriteria_then400() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/persons?search=ide>0")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(400))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getRoles_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/persons?search=id>0&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
-//   TODO
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getPersons_withNarrowerCriteria_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/persons?search=id>2&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
-//    }
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun getPersons_withoutAccount_then401() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(401))
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @Throws(java.lang.Exception::class)
+    fun getPersons_withoutPermissions_then403() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(403))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersons_invalidCriteria_then400() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons?search=ide>0")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersons_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons?search=id>0&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].surname").value("SURNAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].phone").value("+48666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].birthday").value("2001-10-01"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.description").value("EMAIL1@E.mail"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].surname").value("SURNAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].phone").value("666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].birthday").value("2001-10-02"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].user").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].name").value("NAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].surname").value("SURNAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].phone").value("0048666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].birthday").value("2001-10-03"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].user").isEmpty)
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersons_withNarrowerCriteria_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons?search=id>2&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
+    }
+
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_withoutAccount_then401() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/1")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(401))
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_withoutPermissions_then403() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(403))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_TEAMS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_nonExistent_then404() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/{id}", 69)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(404))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Team not found by field id with value: 69"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_TEAMS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_invalidCriteria_then400() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/{id}?search=ide>0", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_TEAMS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/{id}?search=id>0&sortBy=id&sortOrder=ASC", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].surname").value("SURNAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].phone").value("+48666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].birthday").value("2001-10-01"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.description").value("EMAIL1@E.mail"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].surname").value("SURNAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].phone").value("666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].birthday").value("2001-10-02"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].user").isEmpty)
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_TEAMS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInTeam_withNarrowerCriteria_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/teams/{id}?search=id>2&sortBy=id&sortOrder=ASC", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+    }
+
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProject_withoutAccount_then401() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(401))
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProject_withoutPermissions_then403() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(403))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_PROJECTS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProject_nonExistent_then404() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}", 69)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(404))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Project not found by field id with value: 69"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockCustomUser(username = "user1", personId = 1, authorities = ["CAN_SEE_PERSONS", "CAN_SEE_PROJECTS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProjects_invalidCriteria_then400() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}?search=ide>0", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_PROJECTS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProject_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}?search=id>0&sortBy=id&sortOrder=ASC", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].surname").value("SURNAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].phone").value("+48666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].birthday").value("2001-10-01"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].user.description").value("EMAIL1@E.mail"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].surname").value("SURNAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].phone").value("666420656"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].birthday").value("2001-10-02"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].user").isEmpty)
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERSONS", "CAN_SEE_PROJECTS"])
+    @Throws(java.lang.Exception::class)
+    fun getPersonsInProject_withNarrowerCriteria_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/persons/projects/{id}?search=id>2&sortBy=id&sortOrder=ASC", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+    }
 
     @Test
     @Throws(java.lang.Exception::class)

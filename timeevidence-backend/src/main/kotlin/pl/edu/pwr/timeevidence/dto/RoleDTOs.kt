@@ -16,14 +16,14 @@ data class RoleResponse (
     val id: Short,
     val name: String,
     val description: String?,
-    val permissions: List<DictionaryResponse>
+    val permissions: List<PermissionResponse>
 ) {
     companion object {
         fun fromEntity(entity: RoleEntity) = RoleResponse(
             id = entity.id!!,
             name = entity.name,
             description = entity.description,
-            permissions = entity.permissions.map { DictionaryResponse.fromPermission(it) }
+            permissions = entity.permissions.map { PermissionResponse.fromEntity(it) }
         )
     }
 }

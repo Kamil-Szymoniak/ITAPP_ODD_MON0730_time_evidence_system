@@ -2,7 +2,7 @@ package pl.edu.pwr.timeevidence.dto
 
 import pl.edu.pwr.timeevidence.Phone
 import pl.edu.pwr.timeevidence.entity.PersonEntity
-import java.util.*
+import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Past
 
@@ -14,7 +14,7 @@ data class PersonRequest(
     @field:Phone
     val phone: String?,
     @field:Past
-    val birthday: Date
+    val birthday: LocalDate
 )
 
 data class PersonResponse(
@@ -22,7 +22,8 @@ data class PersonResponse(
     val name: String,
     val surname: String,
     val phone: String?,
-    val birthday: Date
+    val birthday: LocalDate,
+    val user: DictionaryResponse?
 ) {
     companion object {
         fun fromEntity(entity: PersonEntity) = PersonResponse(
@@ -30,7 +31,8 @@ data class PersonResponse(
             name = entity.name,
             surname = entity.surname,
             phone = entity.phone,
-            birthday = entity.birthday
+            birthday = entity.birthday,
+            user = entity.user?.let { DictionaryResponse.fromUser(it) }
         )
     }
 }

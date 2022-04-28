@@ -219,80 +219,80 @@ class PermissionControllerIntegrationTests () {
             .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("description"))
     }
 
-//    @Test
-//    @Throws(java.lang.Exception::class)
-//    fun getPermissions_withoutAccount_then401() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/permissions")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(401))
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1")
-//    @Throws(java.lang.Exception::class)
-//    fun getPermissions_withoutPermissions_then403() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/permissions")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(403))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getPermissions_invalidCriteria_then400() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/permissions?search=ide>0")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(400))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getPermissions_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/permissions?search=id>0&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].id").value(3))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].name").value("NAME3"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description").value("description"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").value("description"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].description").value("description"))
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
-//    @Throws(java.lang.Exception::class)
-//    fun getPermissions_withNarrowerCriteria_then200() {
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.get("/permissions?search=id>2&sortBy=id&sortOrder=ASC")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().`is`(200))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
-//            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
-//    }
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun getPermissions_withoutAccount_then401() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/permissions")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(401))
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @Throws(java.lang.Exception::class)
+    fun getPermissions_withoutPermissions_then403() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/permissions")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(403))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access is denied"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPermissions_invalidCriteria_then400() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/permissions?search=ide>0")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid key: 'ide'."))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.dto").doesNotExist())
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPermissions_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/permissions?search=id>0&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(3)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("NAME1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].name").value("NAME2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].name").value("NAME3"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description").value("description"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").value("description"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[2].description").value("description"))
+    }
+
+    @Test
+    @WithMockUser(username = "user1", authorities = ["CAN_SEE_PERMISSIONS"])
+    @Throws(java.lang.Exception::class)
+    fun getPermissions_withNarrowerCriteria_then200() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/permissions?search=id>2&sortBy=id&sortOrder=ASC")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().`is`(200))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items", Matchers.hasSize<Any>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].id").value(3))
+    }
 
     @Test
     @Throws(java.lang.Exception::class)

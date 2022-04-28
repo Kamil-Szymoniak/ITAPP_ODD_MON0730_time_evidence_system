@@ -1,4 +1,4 @@
-import {styled} from "@mui/material";
+import {Box, Button, styled} from "@mui/material";
 import {Grid, makeStyles} from "@material-ui/core";
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -9,7 +9,7 @@ import {useState} from "react";
 import {usePermissions} from "../../util/usePermissions";
 import Routes from "./Routes";
 import HeaderBar from "./HeaderBar";
-import {Link} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import * as routeNames from '../../routeNames'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -19,24 +19,27 @@ const Sidebar = () => {
     const classes = useStyles()
     const [open, setOpen] = useState<boolean>(false)
     const [admOpen, setAdmOpen] = useState<boolean>(false)
+    const [evidenceOpen, setEvidenceOpen] = useState<boolean>(false)
+    const [availabilityOpen, setAvailabilityOpen] = useState<boolean>(false)
     const permissions = usePermissions()
+    const history = useHistory()
 
     const handleOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
 
     const sidebarItem = (path: string, label: string, permission: boolean, icon: JSX.Element, listItem: string) => {
         return permission ? (
-            <Link to={path} style={{textDecoration: 'none'}}>
+            <Button onClick={() => history.push(path)} style={{textDecoration: 'none'}}>
                 <ListItem className={listItem}>
                     <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
                     <ListItemText className={classes.underline} primary={label}/>
                 </ListItem>
-            </Link>
+            </Button>
         ) : (<div/>)
     }
 
     return (
-        <div>
+        <Box sx={{display: 'flex'}}>
             <HeaderBar
                 open={open}
                 handleOpen={handleOpen}
@@ -58,8 +61,6 @@ const Sidebar = () => {
                     {sidebarItem(routeNames.PERSONS, "Persons", permissions.canSeePersons, <div/>, classes.mainMenu)}
                     {sidebarItem(routeNames.TEAMS, "Teams", permissions.canSeeTeams, <div/>, classes.mainMenu)}
                     {sidebarItem(routeNames.PROJECTS, "Projects", permissions.canSeeProjects, <div/>, classes.mainMenu)}
-                    {sidebarItem(routeNames.TIME_EVIDENCE, "Time evidence", permissions.canSeeEvidence, <div/>, classes.mainMenu)}
-                    {sidebarItem(routeNames.AVAILABILITY, "Availability", permissions.canSeeAvailability, <div/>, classes.mainMenu)}
                     {permissions.hasAdmPermission ? (
                         <ListItem onClick={() => setAdmOpen(!admOpen)} className={classes.mainMenu}>
                             <SupervisorAccountIcon className={classes.marginRight}/>
@@ -72,13 +73,48 @@ const Sidebar = () => {
                         {sidebarItem(routeNames.ROLES, "Roles", permissions.canSeeRoles, <div/>, classes.mainMenu)}
                         {sidebarItem(routeNames.USERS, "Users", permissions.canSeeUsers, <div/>, classes.mainMenu)}
                     </Collapse>
+                    {permissions.canEditEvidence ? (
+                        <div>
+                            <ListItem onClick={() => setEvidenceOpen(!evidenceOpen)} className={classes.mainMenu}>
+                                <SupervisorAccountIcon className={classes.marginRight}/>
+                                <ListItemText primary="Time evidence"/>
+                                {evidenceOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                            </ListItem>
+                            <Collapse in={evidenceOpen} timeout={'auto'} unmountOnExit>
+                                {sidebarItem(routeNames.TIME_EVIDENCE, "Time evidence", true, <div/>, classes.mainMenu)}
+                                {sidebarItem(`${routeNames.TIME_EVIDENCE}/manager`, "TM management", permissions.canEditEvidence, <div/>, classes.mainMenu)}
+                            </Collapse>
+                        </div>
+                    ) : (
+                        <div>
+                            {sidebarItem(routeNames.TIME_EVIDENCE, "Time evidence", true, <div/>, classes.mainMenu)}
+                        </div>
+                    )}
+                    {permissions.canEditAvailability ? (
+                      <div>
+                          <ListItem onClick={() => setAvailabilityOpen(!availabilityOpen)} className={classes.mainMenu}>
+                              <SupervisorAccountIcon className={classes.marginRight}/>
+                              <ListItemText primary="Availability"/>
+                              {availabilityOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                          </ListItem>
+                          <Collapse in={availabilityOpen} timeout={'auto'} unmountOnExit>
+                              {sidebarItem(routeNames.AVAILABILITY, "Availability", true, <div/>, classes.mainMenu)}
+                              {sidebarItem(`${routeNames.AVAILABILITY}/manager`, "Availability management", permissions.canEditAvailability, <div/>, classes.mainMenu)}
+                          </Collapse>
+                      </div>
+                    ) : (
+                      <div>
+                          {sidebarItem(routeNames.AVAILABILITY, "Availability",true, <div/>, classes.mainMenu)}
+                      </div>
+                    )}
+                    {sidebarItem(routeNames.CHANGE_PASSWORD, "Change password", true, <div/>, classes.mainMenu)}
                 </MenuList>
             </Drawer>
             <Main open={open}>
                 <Grid className={classes.drawerHeader}/>
                 <Routes/>
             </Main>
-        </div>
+        </Box>
     )
 }
 
@@ -171,14 +207,12 @@ const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})<{
 }>(({theme, open}) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
-    // backgroundColor: '#d3d3d3',
     transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${sidebarWidth}px`,
     ...(open && {
-        // backgroundColor: '#d3d3d3',
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,

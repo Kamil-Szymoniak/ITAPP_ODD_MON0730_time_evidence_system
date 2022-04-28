@@ -28,14 +28,14 @@ export function getProperty<T>(object: any, propertyName: string): T | undefined
 export function selectInputProps<T>(id: keyof T & string, formikProps: FormikProps<T>) {
     const handleChange = (e: any) => {
         formikProps.setFieldValue(id, e.target.value);
+        formikProps.setFieldTouched(id, true, true)
     };
 
     return {
         id,
         onChange: handleChange as any,
         value: formikProps.values[id] as any,
-        onBlur: formikProps.handleBlur,
-        error: formikProps.errors[id] != null,
+        error: formikProps.errors[id] && formikProps.touched[id],
         helperText: formikProps.errors[id],
     };
 }

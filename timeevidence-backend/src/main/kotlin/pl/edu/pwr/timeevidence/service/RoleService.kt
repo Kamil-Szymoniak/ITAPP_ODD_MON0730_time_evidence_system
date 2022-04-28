@@ -4,10 +4,12 @@ import org.springframework.stereotype.Service
 import pl.edu.pwr.timeevidence.dao.PermissionRepository
 import pl.edu.pwr.timeevidence.dao.RoleRepository
 import pl.edu.pwr.timeevidence.dto.DictionaryResponse
+import pl.edu.pwr.timeevidence.dto.PagedResponse
 import pl.edu.pwr.timeevidence.dto.RoleRequest
 import pl.edu.pwr.timeevidence.dto.RoleResponse
 import pl.edu.pwr.timeevidence.entity.RoleEntity
 import pl.edu.pwr.timeevidence.exception.NotFoundException
+import pl.edu.pwr.timeevidence.specification.EntityCriteria
 
 @Service
 class RoleService (private val roleRepository: RoleRepository, private val permissionRepository: PermissionRepository) {
@@ -17,8 +19,8 @@ class RoleService (private val roleRepository: RoleRepository, private val permi
         else RoleResponse.fromEntity(roleRepository.save(fromDto(request, id)))
     fun getRole(id: Short) = RoleResponse.fromEntity(roleRepository.findById(id)
         .orElseThrow { throw NotFoundException("Role", "id", id) })
-    //fun getRoles(criteria: EntityCriteria<RoleEntity>) =
-    //    PagedResponse(roleRepository.findAll(criteria.specification, criteria.paging!!).map { RoleResponse(it) })
+    fun getRoles(criteria: EntityCriteria<RoleEntity>) =
+        PagedResponse(roleRepository.findAll(criteria.specification, criteria.paging!!).map { RoleResponse.fromEntity(it) })
     fun getAllRoles() = roleRepository.findAll().map { DictionaryResponse.fromRole(it) }
     fun deleteRole(id: Short) {
         if (roleRepository.findById(id).isEmpty) {

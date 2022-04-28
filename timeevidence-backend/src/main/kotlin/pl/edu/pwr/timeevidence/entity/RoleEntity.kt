@@ -50,4 +50,10 @@ class RoleEntity (
         result = 31 * result + permissions.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "RoleEntity(id=$id, name='$name', description=$description, permissions=${permissions.map { it.id }})"
+    }
+
+
 }

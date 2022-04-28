@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service
 import pl.edu.pwr.timeevidence.config.CookieService
 import pl.edu.pwr.timeevidence.config.JwtUtils
 import pl.edu.pwr.timeevidence.config.UserPrincipal
+import pl.edu.pwr.timeevidence.dao.PersonRepository
 import pl.edu.pwr.timeevidence.dao.RoleRepository
 import pl.edu.pwr.timeevidence.dao.UserRepository
 import pl.edu.pwr.timeevidence.dto.*
 import pl.edu.pwr.timeevidence.entity.UserEntity
 import pl.edu.pwr.timeevidence.exception.BadRequestException
 import pl.edu.pwr.timeevidence.exception.NotFoundException
+import pl.edu.pwr.timeevidence.specification.EntityCriteria
 import javax.servlet.http.HttpServletResponse
 
 @Service
@@ -24,6 +26,7 @@ class UserService (
     val cookieService: CookieService,
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
+    private val personRepository: PersonRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
     fun handleRegister(request: UserRequest): Int {
@@ -76,6 +79,7 @@ class UserService (
         }
         user.username = request.username
         user.email = request.email
+        user.person = request.person?.let { personRepository.findById(it).orElseThrow { NotFoundException("Person", "id", it) } }
         user.roles = request.roles.map { roleRepository.findById(it).orElseThrow { NotFoundException("Role", "id", it) } }
         return UserResponse.fromEntity(userRepository.save(user))
     }
@@ -87,8 +91,8 @@ class UserService (
         UserResponse.fromEntity(userRepository.findUserByUsernameIgnoreCase((auth.principal as UserPrincipal).username)
             .orElseThrow { NotFoundException("Me", "username", (auth.principal as UserPrincipal).username) })
 
-//   fun getUsers(criteria: EntityCriteria<UserEntity>) =
-//        PagedResponse(userRepository.findAll(criteria.specification, criteria.paging!!).map { UserResponse(it) })
+   fun getUsers(criteria: EntityCriteria<UserEntity>) =
+        PagedResponse(userRepository.findAll(criteria.specification, criteria.paging!!).map { UserResponse.fromEntity(it) })
 
     fun getAllUsers() = userRepository.findAll().map { DictionaryResponse.fromUser(it) }
     
@@ -103,6 +107,11 @@ class UserService (
         username = dto.username,
         email = dto.email,
         password = passwordEncoder.encode(dto.password),
-        roles = dto.roles.map { roleRepository.findById(it).orElseThrow { NotFoundException("Role", "id", it) } }
+        roles = dto.roles.map {
+            roleRepository.findById(it).orElseThrow { NotFoundException("Role", "id", it) }
+        },
+        person = dto.person?.let {
+            personRepository.findById(it).orElseThrow { NotFoundException("Person", "id", it) }
+        }
     )
 }

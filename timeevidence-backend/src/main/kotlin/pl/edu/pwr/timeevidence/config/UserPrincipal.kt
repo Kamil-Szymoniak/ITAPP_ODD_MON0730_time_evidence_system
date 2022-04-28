@@ -8,6 +8,7 @@ import pl.edu.pwr.timeevidence.entity.UserEntity
 class UserPrincipal (
     private val id: Int,
     private val username: String,
+    private val personId: Int?,
     private val email: String,
     private val password: String,
     private val authorities: Collection<GrantedAuthority>
@@ -22,6 +23,7 @@ class UserPrincipal (
             return UserPrincipal(
                 user.id!!,
                 user.username,
+                user.person?.id,
                 user.email,
                 user.password,
                 authorities
@@ -31,6 +33,7 @@ class UserPrincipal (
 
     fun getId() = id
     override fun getUsername() = username
+    fun getPersonId() = personId
     fun getEmail() = email
     override fun getAuthorities() = authorities
     override fun getPassword() = password
